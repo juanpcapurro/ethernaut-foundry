@@ -24,7 +24,7 @@ abstract contract BaseTest is Test {
         levelFactory = construction();
         ethernaut.registerLevel(Level(address(levelFactory)));
         vm.startPrank(attacker);
-        level = payable(ethernaut.createLevelInstance(Level(levelFactory)));
+        level = payable(ethernaut.createLevelInstance{value: 0.001 ether}(Level(levelFactory)));
 
         //////////////////
         // LEVEL ATTACK //

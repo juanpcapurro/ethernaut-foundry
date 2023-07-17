@@ -1,43 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import {BaseTest} from "./BaseTest.sol";
 import {TelephoneFactory} from "../src/levels/04-TelephoneFactory.sol";
 import {Telephone} from "../src/levels/04-Telephone.sol";
-import {Ethernaut} from "../src/core/Ethernaut.sol";
 
-contract TelephoneSolution is Test {
-    Ethernaut internal ethernaut;
-    address internal attacker = address(1337);
+contract TelephoneSolution is BaseTest {
 
-    function solution(Telephone target) internal virtual {
+    function solution(address payable target_) internal override{
+        Telephone target = Telephone(target_);
         target.changeOwner(attacker);
     }
 
-    function testSolution() public {
-        /////////////////
-        // LEVEL SETUP //
-        /////////////////
-        ethernaut = new Ethernaut();
-        vm.deal(attacker, 1 ether/10);
-
-        TelephoneFactory telephoneFactory = new TelephoneFactory();
-        ethernaut.registerLevel(telephoneFactory);
-        vm.startPrank(attacker);
-        address levelAddress = ethernaut.createLevelInstance(telephoneFactory);
-        Telephone telephoneContract = Telephone(payable(levelAddress));
-
-        //////////////////
-        // LEVEL ATTACK //
-        //////////////////
-
-        solution(telephoneContract);
-
-        //////////////////////
-        // LEVEL SUBMISSION //
-        //////////////////////
-        bool isLevelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
-        vm.stopPrank();
-        assert(isLevelSuccessfullyPassed);
+    function construction() internal override returns(address payable ) {
+        return payable(address(new TelephoneFactory()));
     }
 }

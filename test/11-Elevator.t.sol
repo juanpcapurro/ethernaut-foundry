@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import {BaseTest} from "./BaseTest.sol";
 import {ElevatorFactory} from "../src/levels/11-ElevatorFactory.sol";
 import {Elevator, Building} from "../src/levels/11-Elevator.sol";
-import {Ethernaut} from "../src/core/Ethernaut.sol";
 
 contract MyBuilding is Building {
     uint256 private callCount = 0;
@@ -18,39 +17,14 @@ contract MyBuilding is Building {
     }
 }
 
-contract ElevatorSolution is Test {
-    Ethernaut internal ethernaut;
-    address internal attacker = address(1337);
-    ElevatorFactory internal factory;
+contract ElevatorSolution is BaseTest {
 
-    function solution(Elevator target) internal {
+    function solution(address payable target_) internal override{
+        Elevator target = Elevator(target_);
         (new MyBuilding()).goTo(target);
     }
 
-    function testSolution() public {
-        /////////////////
-        // LEVEL SETUP //
-        /////////////////
-        ethernaut = new Ethernaut();
-        vm.deal(attacker, 1 ether/10);
-
-        factory = new ElevatorFactory();
-        ethernaut.registerLevel(factory);
-        vm.startPrank(attacker);
-        address levelAddress = ethernaut.createLevelInstance{value: 0.001 ether}(factory);
-        Elevator kingContract = Elevator(payable(levelAddress));
-
-        //////////////////
-        // LEVEL ATTACK //
-        //////////////////
-
-        solution(kingContract);
-
-        //////////////////////
-        // LEVEL SUBMISSION //
-        //////////////////////
-        bool isLevelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
-        vm.stopPrank();
-        assert(isLevelSuccessfullyPassed);
+    function construction() internal override returns(address payable ) {
+        return payable(address(new ElevatorFactory()));
     }
 }
