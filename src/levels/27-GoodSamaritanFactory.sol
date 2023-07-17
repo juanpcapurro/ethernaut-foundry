@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "../core/Level-08.sol";
+import "../core/BaseLevel.sol";
 import "./27-GoodSamaritan.sol";
 
 contract GoodSamaritanFactory is Level {

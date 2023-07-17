@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.13;
 
-import "../core/Level-05.sol";
+import "../core/BaseLevel.sol";
 import "./19-AlienCodex.sol";
 
 contract AlienCodexFactory is Level {

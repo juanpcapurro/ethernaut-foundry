@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import {BaseTest} from "./BaseTest.sol";
 import {GoodSamaritanFactory} from "../src/levels/27-GoodSamaritanFactory.sol";
-import {GoodSamaritan, Coin, Wallet, INotifyable} from "../src/levels/27-GoodSamaritan.sol";
-import {Ethernaut} from "../src/core/Ethernaut.sol";
-import {Level} from  "../src/core/BaseLevel.sol";
+import {GoodSamaritan, INotifyable} from "../src/levels/27-GoodSamaritan.sol";
 
 contract Greed is INotifyable{
     error NotEnoughBalance();
@@ -23,40 +21,14 @@ contract Greed is INotifyable{
     }
 }
 
-contract GoodSamaritanSolution is Test {
-    Ethernaut internal ethernaut;
-    address internal attacker = address(1337);
-    GoodSamaritanFactory internal factory;
+contract GoodSamaritanSolution is BaseTest {
 
-    function solution(GoodSamaritan target) internal {
-        Greed greed = new Greed();
-        greed.attack(target);
+    function construction() internal override returns(address payable ) {
+        return payable(address(new GoodSamaritanFactory()));
     }
 
-    function testSolution() public {
-        /////////////////
-        // LEVEL SETUP //
-        /////////////////
-        ethernaut = new Ethernaut();
-        vm.deal(attacker, 1 ether/10);
-
-        factory = new GoodSamaritanFactory();
-        ethernaut.registerLevel(Level(address(factory)));
-        vm.startPrank(attacker);
-        address levelAddress = ethernaut.createLevelInstance(Level(address(factory)));
-        GoodSamaritan goodSamaritanContract = GoodSamaritan(payable(levelAddress));
-
-        //////////////////
-        // LEVEL ATTACK //
-        //////////////////
-
-        solution(goodSamaritanContract);
-
-        //////////////////////
-        // LEVEL SUBMISSION //
-        //////////////////////
-        bool isLevelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
-        vm.stopPrank();
-        assert(isLevelSuccessfullyPassed);
+    function solution(address payable target) override internal {
+        Greed greed = new Greed();
+        greed.attack(GoodSamaritan(address(target)));
     }
 }
