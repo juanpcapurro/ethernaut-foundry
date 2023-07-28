@@ -7,7 +7,7 @@ import {GatekeeperOne} from "../src/levels/13-GatekeeperOne.sol";
 
 contract Caller {
     function enter(GatekeeperOne target, bytes8 key) external {
-        target.enter{gas: 24841}(key);
+        target.enter{gas: 24989}(key);
     }
 }
 
