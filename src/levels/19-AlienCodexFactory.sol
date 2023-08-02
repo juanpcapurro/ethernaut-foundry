@@ -2,18 +2,19 @@
 
 pragma solidity ^0.8.13;
 
-import "../core/BaseLevel.sol";
-import "./19-AlienCodex.sol";
+import {Level} from "../core/BaseLevel.sol";
+import {IAlienCodex} from "./19-IAlienCodex.sol";
+import {StdCheats} from "forge-std/StdCheats.sol";
 
-contract AlienCodexFactory is Level {
+contract AlienCodexFactory is Level, StdCheats {
     function createInstance(address _player) public payable override returns (address) {
         _player;
-        return address(new AlienCodex());
+        return deployCode("19-AlienCodex-05.sol:AlienCodex");
     }
 
     function validateInstance(address payable _instance, address _player) public view override returns (bool) {
         // _player;
-        AlienCodex instance = AlienCodex(_instance);
+        IAlienCodex instance = IAlienCodex(_instance);
         return instance.owner() == _player;
     }
 }
