@@ -15,8 +15,8 @@ contract CoinFlipSolution is BaseTest {
     function solution(address payable target_) internal override{
         CoinFlip target = CoinFlip(target_);
         for (uint i = 0 ; i < 10 ; i++){
-            target.flip(predictFlip());
             vm.roll(block.number+1);
+            target.flip(predictFlip());
         }
     }
 
