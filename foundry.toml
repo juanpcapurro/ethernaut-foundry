@@ -1,5 +1,6 @@
 [profile.default]
 optimizer=false
+ffi=true
 evm_version = 'shanghai'
 src = 'src'
 out = 'out'
