@@ -1,0 +1,6 @@
+#define macro MAIN() = {
+  0x2a 0x1f mstore8
+  0x20
+  0x00
+  return
+}
